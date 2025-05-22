@@ -2,12 +2,12 @@
 
 # Base Mapper: defines mapping interface
 # Base Reducer: defines reducing interface
-
 # base.py
 
 from abc import ABC, abstractmethod
 from threading import Lock
 from typing import Any, List, Tuple, Optional
+
 
 class BaseMapper(ABC):
     """
@@ -41,3 +41,26 @@ class BaseMapper(ABC):
 
     def get_output(self) -> List[Tuple[Any, Any]]:
         return self.output
+
+
+class BaseReducer(ABC):
+    """
+    Abstract base class for all reducers.
+    All reducer subclasses must implement the reduce() method.
+    """
+
+    def __init__(self, key: Any, values: List[Any], lock: Optional[Lock] = None):
+        self.key = key
+        self.values = values
+        self.result = None
+        self.lock = lock
+
+    @abstractmethod
+    def reduce(self) -> None:
+        """
+        Reduces a list of values for a single key to a final result.
+        """
+        pass
+
+    def get_result(self) -> Tuple[Any, Any]:
+        return (self.key, self.result)
